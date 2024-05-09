@@ -1,16 +1,29 @@
 <template>
   <div>
-    <h1>ToDo List</h1>
-    <input type="text" v-model="inputKegiatan" @keyup.enter="tambahKegiatan" placeholder="Tambah kegiatan...">
-    <input type="checkbox" v-model="filterSelesai"> Tampilkan yang Belum Selesai
-    <div v-for="kegiatan in filteredKegiatanList" :key="kegiatan.id">
-      <kegiatan :kegiatan="kegiatan" @batalkan="batalkan"></kegiatan>
+    <header>
+      <nav>
+        <ul>
+          <li @click="showTodos">Todos</li>
+          <li @click="showPosts">Posts</li>
+        </ul>
+      </nav>
+    </header>
+    <kegiatan v-if="showingTodos"></kegiatan>
+    <div v-else>
+      <h1>Postingan Pengguna</h1>
+      <select v-model="selectedUser" @change="fetchPosts">
+        <option v-for="user in users" :value="user.id" :key="user.id">{{ user.name }}</option>
+      </select>
+      <div v-for="post in posts" :key="post.id">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.body }}</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import Kegiatan from './components/Kegiatan.vue';
 
 export default {
@@ -18,42 +31,84 @@ export default {
     Kegiatan
   },
   setup() {
-    const kegiatanList = ref([]);
-    const inputKegiatan = ref('');
-    const filterSelesai = ref(false);
+    const showingTodos = ref(true);
+    const selectedUser = ref(null);
+    const users = ref([]);
+    const posts = ref([]);
 
-    const tambahKegiatan = () => {
-      if (inputKegiatan.value.trim() !== '') {
-        kegiatanList.value.push({
-          id: kegiatanList.value.length + 1,
-          nama: inputKegiatan.value.trim(),
-          selesai: false
-        });
-        inputKegiatan.value = '';
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/users');
+        const data = await response.json();
+        users.value = data;
+      } catch (error) {
+        console.error('Error fetching users:', error);
       }
     };
 
-    const batalkan = (id) => {
-      kegiatanList.value = kegiatanList.value.filter(kegiatan => kegiatan.id !== id);
+    const fetchPosts = async () => {
+      if (!selectedUser.value) return;
+      try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/posts?userId=${selectedUser.value}`);
+        const data = await response.json();
+        posts.value = data;
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
     };
 
-    const filteredKegiatanList = computed(() => {
-      return kegiatanList.value.filter(kegiatan => !filterSelesai.value || !kegiatan.selesai);
+    const showTodos = () => {
+      showingTodos.value = true;
+    };
+
+    const showPosts = () => {
+      showingTodos.value = false;
+      fetchUsers();
+    };
+
+    onMounted(() => {
+     
     });
 
     return {
-      kegiatanList,
-      inputKegiatan,
-      filterSelesai,
-      tambahKegiatan,
-      batalkan,
-      filteredKegiatanList
+      showingTodos,
+      selectedUser,
+      users,
+      posts,
+      fetchPosts,
+      showTodos,
+      showPosts
     };
   }
-}
+};
 </script>
-
 <style>
+
+header {
+  background-color: #98b0c9; 
+  padding: 10px;
+}
+
+nav ul {
+  list-style-type: none; 
+  padding: 0;
+}
+
+nav li {
+  display: inline; 
+  margin-right: 20px; 
+}
+
+nav li a {
+  color: white; 
+  text-decoration: none;
+  font-size: 18px; 
+}
+
+nav li:hover {
+  background-color: #46568b; 
+}
+
 body {
   font-family: 'Arial', sans-serif;
   background-color: #7fa0c1;
@@ -163,5 +218,4 @@ input[type="checkbox"]:checked + span {
   color: #777;
   text-decoration: line-through;
 }
-
 </style>
