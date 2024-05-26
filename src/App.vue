@@ -67,7 +67,7 @@ export default {
     };
 
     onMounted(() => {
-     
+      // You can perform any initial setup here
     });
 
     return {
@@ -82,31 +82,31 @@ export default {
   }
 };
 </script>
-<style>
 
+<style>
 header {
-  background-color: #98b0c9; 
+  background-color: #98b0c9;
   padding: 10px;
 }
 
 nav ul {
-  list-style-type: none; 
+  list-style-type: none;
   padding: 0;
 }
 
 nav li {
-  display: inline; 
-  margin-right: 20px; 
+  display: inline;
+  margin-right: 20px;
 }
 
 nav li a {
-  color: white; 
+  color: white;
   text-decoration: none;
-  font-size: 18px; 
+  font-size: 18px;
 }
 
 nav li:hover {
-  background-color: #46568b; 
+  background-color: #46568b;
 }
 
 body {
@@ -147,7 +147,7 @@ button {
   color: white;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 8px; 
+  margin-top: 8px;
 }
 
 button:hover {
@@ -191,6 +191,7 @@ button:hover {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -199,7 +200,6 @@ button:hover {
 .fade-in {
   animation: fadeIn 0.5s ease;
 }
-
 
 button.delete-button {
   background-color: #dc3545;
